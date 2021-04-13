@@ -35,17 +35,12 @@ func (s *ServiceRecord) ServiceTypeName() string {
 	return s.serviceTypeName
 }
 
-// NewServiceRecord constructs a ServiceRecord.
-func NewServiceRecord(instance, service, domain string) *ServiceRecord {
-	s := &ServiceRecord{
-		Instance:    instance,
-		Service:     service,
-		Domain:      domain,
-		serviceName: fmt.Sprintf("%s.%s.", trimDot(service), trimDot(domain)),
-	}
+// Sets the Domain, serviceName and serviceTypeName for a ServiceRecord
+func (s *ServiceRecord) SetDomain(domain string) {
+	s.Domain = domain
 
-	// Cache service instance name
-	if instance != "" {
+	s.serviceName = fmt.Sprintf("%s.%s.", trimDot(s.Service), trimDot(domain))
+	if s.Instance != "" {
 		s.serviceInstanceName = fmt.Sprintf("%s.%s", trimDot(s.Instance), s.ServiceName())
 	}
 
@@ -55,6 +50,16 @@ func NewServiceRecord(instance, service, domain string) *ServiceRecord {
 		typeNameDomain = trimDot(s.Domain)
 	}
 	s.serviceTypeName = fmt.Sprintf("_services._dns-sd._udp.%s.", typeNameDomain)
+}
+
+// NewServiceRecord constructs a ServiceRecord.
+func NewServiceRecord(instance, service, domain string) *ServiceRecord {
+	s := &ServiceRecord{
+		Instance:    instance,
+		Service:     service,
+	}
+
+	s.SetDomain(domain)
 
 	return s
 }
